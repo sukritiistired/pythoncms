@@ -583,7 +583,23 @@ document.addEventListener("change", function(e){
     }
 });
 </script>
-
+<script>
+function deleteItem(type, id) {
+    fetch("{% url 'contentmgmt:delete_item' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({type: type, id: id})
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) location.reload();
+        else alert('Failed to delete item');
+    });
+}
+</script>
 
 
 {% endblock %}

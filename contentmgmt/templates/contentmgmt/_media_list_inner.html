@@ -1,0 +1,36 @@
+{% load contentmgmt_extras %}
+<div id="media-explorer" class="row">
+
+    <!-- FOLDERS -->
+    {% for folder in folders %}
+    <div class="col-3 mb-3">
+        <div class="explorer-card folder-card" data-folder-id="{{ folder.id }}">
+            <div class="icon-wrapper text-center">
+                <i class="fas fa-folder fa-3x text-warning"></i>
+            </div>
+            <div class="name text-center mt-2">{{ folder.name|truncatechars:50 }}</div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- FILES -->
+    {% for file in files %}
+    <div class="col-3 mb-3">
+        <div class="explorer-card file-card file-item" data-url="{{ file.file.url }}" data-name="{{ file.name }}">
+            <div class="icon-wrapper text-center">
+                {% if file.file.url|is_image %}
+                    <img src="{{ file.file.url }}" class="img-thumbnail" style="height:80px; width:auto;">
+                {% elif file.file.url|is_video %}
+                    <video src="{{ file.file.url }}" muted style="height:80px; width:auto;"></video>
+                {% elif file.file.url|is_pdf %}
+                    <i class="fas fa-file-pdf fa-3x text-danger"></i>
+                {% else %}
+                    <i class="fas fa-file fa-3x text-secondary"></i>
+                {% endif %}
+            </div>
+            <div class="name text-center mt-2">{{ file.name|truncatechars:50 }}</div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>

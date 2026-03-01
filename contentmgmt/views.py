@@ -45,8 +45,14 @@ def upload_file(request):
     if not request.FILES:
         return JsonResponse({'success': False, 'errors': 'No files uploaded'})
 
+    ALLOWED_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.gif', '.pdf', '.docx')
     uploaded_files = []
+
     for f in request.FILES.getlist('file'):
+        # ✅ Skip files that are not allowed
+        if not f.name.lower().endswith(ALLOWED_EXTENSIONS):
+            continue
+
         media = MediaFile.objects.create(
             file=f,
             folder=folder,
@@ -59,7 +65,6 @@ def upload_file(request):
         })
 
     return JsonResponse({'success': True, 'files': uploaded_files})
-
 @require_POST
 def delete_item(request):
     item_type = request.POST.get('type')
@@ -134,6 +139,19 @@ def rename_item(request):
 
     return JsonResponse({'success': True})
 
-def cms_media_list(request):
-    images = MediaFile.objects.all()
-    return render(request, 'contentmgmt/cms_media_list.html', {'images': images})
+def cms_media_list(request, folder_id=None):
+    # Determine current folder
+    if folder_id:
+        folder = get_object_or_404(Folder, id=folder_id, is_active=True)
+        folders = Folder.objects.filter(parent=folder, is_active=True)
+        files = MediaFile.objects.filter(folder=folder, is_active=True)
+    else:
+        folder = None
+        folders = Folder.objects.filter(parent=None, is_active=True)
+        files = MediaFile.objects.filter(folder=None, is_active=True)
+
+    return render(request, 'contentmgmt/cms_media_list.html', {
+        'folders': folders,
+        'files': files,
+        'current_folder': folder
+    })
