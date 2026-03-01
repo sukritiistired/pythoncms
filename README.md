@@ -1,10 +1,10 @@
-Python CMS Manual
+#Python CMS Manual
 
-This guide explains how to set up and run the Python CMS from scratch, including installing Python, setting up the environment, and running the CMS locally.
+-This guide explains how to set up and run the Python CMS from scratch, including installing Python, setting up the environment, and running the CMS locally.
 
-1. Install Python
+##1. Install Python
 
-Go to the official Python website: https://www.python.org/downloads/
+-Go to the official Python website: https://www.python.org/downloads/
 
 Download the latest stable version of Python (recommended 3.11 or higher).
 
@@ -22,7 +22,7 @@ python --version
 
 It should display the Python version installed.
 
-2. Install Git
+##2. Install Git
 
 Go to https://git-scm.com/downloads
 
@@ -32,7 +32,7 @@ Verify installation:
 
 git --version
 
-3. Clone the CMS repository
+##3. Clone the CMS repository
 
 Open a terminal or command prompt.
 
@@ -50,7 +50,7 @@ Enter the project folder:
 
 cd pythoncms
 
-4. Create a virtual environment
+##4. Create a virtual environment
 
 A virtual environment ensures the project’s dependencies are separate from your system Python.
 
@@ -73,7 +73,7 @@ source venv/bin/activate
 
 You should see (venv) at the start of your terminal prompt.
 
-5. Install dependencies
+##5. Install dependencies
 
 Make sure you are in the project folder and the virtual environment is active.
 
@@ -81,7 +81,7 @@ Install required packages:
 
 pip install -r requirements.txt
 
-6. Set up the database
+##6. Set up the database
 
 This CMS uses SQLite by default (no extra installation needed).
 
@@ -97,7 +97,7 @@ python manage.py createsuperuser
 
 Enter a username, email, and password when prompted.
 
-7. Run the development server
+##7. Run the development server
 
 Start the Django development server:
 
