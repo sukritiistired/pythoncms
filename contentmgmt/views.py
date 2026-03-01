@@ -1,3 +1,4 @@
+from django.forms import Media
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -132,3 +133,7 @@ def rename_item(request):
         return JsonResponse({'success': False})
 
     return JsonResponse({'success': True})
+
+def cms_media_list(request):
+    images = MediaFile.objects.all()
+    return render(request, 'contentmgmt/cms_media_list.html', {'images': images})

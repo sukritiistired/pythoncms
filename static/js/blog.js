@@ -330,6 +330,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+document.getElementById('selectImageBtn').addEventListener('click', function() {
+    var cmsModal = new bootstrap.Modal(document.getElementById('cmsModal'));
+    cmsModal.show();
+
+    // Fetch CMS content
+    fetch("{% url 'contentmgmt:media_list' %}")
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('cmsModalBody').innerHTML = html;
+        });
+});
 
 
 

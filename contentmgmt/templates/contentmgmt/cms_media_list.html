@@ -1,0 +1,8 @@
+<div class="row">
+    {% for img in images %}
+    <div class="col-3 mb-3">
+        <img src="{{ img.file.url }}" class="img-thumbnail cms-image" data-id="{{ img.id }}"
+            data-url="{{ img.file.url }}" style="cursor:pointer;">
+    </div>
+    {% endfor %}
+</div>

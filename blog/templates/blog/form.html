@@ -8,129 +8,204 @@
 </div>
 <h3>
     {% if form.instance.pk %}
-        Edit {{ form.instance.title }}<small style="font-size: 0.5em; color: gray; margin-left: 5px;">{% if homepage %} Homepage Blog{% else %} Inner Page Blog{% endif %} </small>
+    Edit {{ form.instance.title }}<small style="font-size: 0.5em; color: gray; margin-left: 5px;">{% if homepage %}
+        Homepage Blog{% else %} Inner Page Blog{% endif %} </small>
     {% else %}
-        Add New <small style="font-size: 0.5em; color: gray; margin-left: 5px;">{% if homepage %} Homepage Blog{% else %} Inner Page Blog{% endif %} </small>
+    Add New <small style="font-size: 0.5em; color: gray; margin-left: 5px;">{% if homepage %} Homepage Blog{% else %}
+        Inner Page Blog{% endif %} </small>
     {% endif %}
-    </h3>
+</h3>
 
-    {{ form.media }}
-    <form method="post">
-        <input type="hidden" id="blog-id" value="{{ form.instance.pk|default:'' }}">
-        {% csrf_token %}
-           {{ form.title.label_tag }}<br>
-            {{ form.title }}
-            <br><br>
-            
-            {{ form.subtitle.label_tag }}<br>
-            {{ form.subtitle }}<br><br>
+{{ form.media }}
+<form method="post">
+    <input type="hidden" id="blog-id" value="{{ form.instance.pk|default:'' }}">
+    {% csrf_token %}
+    {{ form.title.label_tag }}<br>
+    {{ form.title }}
+    <br><br>
 
-            {{ form.slug.label_tag }}<br>
-            {{ form.slug }}
-            <span id="slug-warning" style="color:red; display:none;">
-                Slug already exists!
-            </span>
-            <br><br>
+    {{ form.subtitle.label_tag }}<br>
+    {{ form.subtitle }}<br><br>
 
-           {{ form.content.label_tag }}<br>
-{{ form.content }}<br>
-<button type="button" id="add-readmore" class="btn btn-secondary mb-2">
-    Read More
-</button><br>
+    {{ form.slug.label_tag }}<br>
+    {{ form.slug }}
+    <span id="slug-warning" style="color:red; display:none;">
+        Slug already exists!
+    </span>
+    <br><br>
 
-<!-- CKEditor 4 CDN -->
-<script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
+    {{ form.content.label_tag }}<br>
+    {{ form.content }}<br>
+    <button type="button" id="add-readmore" class="btn btn-secondary mb-2">
+        Read More
+    </button><br>
 
-<style>
-hr.readmore {
-    border: none;
-    border-top: 2px dashed #333;
-    margin: 20px 0;
-}
-</style>
+    <!-- CKEditor 4 CDN -->
+    <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
 
-<script>
-    // Initialize CKEditor
-    var editor = CKEDITOR.replace('{{ form.content.id_for_label }}');
-
-    // Handle external Read More button
-    document.getElementById('add-readmore').addEventListener('click', function() {
-        var data = editor.getData();
-
-        // Check for unique marker
-        if (data.indexOf('data-readmore="true"') !== -1) {
-            alert('Only one Read More line is allowed!');
-            return;
+    <style>
+        hr.readmore {
+            border: none;
+            border-top: 2px dashed #333;
+            margin: 20px 0;
         }
+    </style>
 
-        // Insert unique stylised readmore line
-        editor.insertHtml('<hr class="readmore" data-readmore="true">');
-    });
-</script>
+    <script>
+        // Initialize CKEditor
+        var editor = CKEDITOR.replace('{{ form.content.id_for_label }}');
 
+        // Handle external Read More button
+        document.getElementById('add-readmore').addEventListener('click', function () {
+            var data = editor.getData();
 
-            <style>
-            hr.readmore {
-                border: none;
-                border-top: 2px dashed #333;
-                margin: 20px 0;
+            // Check for unique marker
+            if (data.indexOf('data-readmore="true"') !== -1) {
+                alert('Only one Read More line is allowed!');
+                return;
             }
-            </style>
 
-            
+            // Insert unique stylised readmore line
+            editor.insertHtml('<hr class="readmore" data-readmore="true">');
+        });
+    </script>
 
-            {{ form.active.label_tag }}
-            {{ form.active }}<br><br>
-            
-            <input type="hidden" name="metadata_opened" id="metadata_opened" value="0">
 
-<input type="hidden" name="metadata_opened" id="metadata_opened" value="0">
+    <style>
+        hr.readmore {
+            border: none;
+            border-top: 2px dashed #333;
+            margin: 20px 0;
+        }
+    </style>
 
-<button class="btn btn-secondary mb-3 d-flex justify-content-between align-items-center"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#metadata-section"
-        aria-expanded="false">
-    Metadata
-    <i class="bi bi-chevron-down ms-2"></i>
-</button>
+    <!-- Trigger button -->
+    <div class="mb-3">
+        {{ form.featured_image.label_tag }}
+        <button type="button" class="btn btn-outline-secondary" id="selectImageBtn">
+            Select Image from CMS
+        </button>
 
-<div class="collapse" id="metadata-section">
-    <div class="card card-body">
-        <div class="mb-3">
-            {{ form.meta_title.label_tag }}<br>
-            {{ form.meta_title }}
-            <small class="text-muted">
-                <span id="title-left">60</span> characters left
-            </small>
+        <!-- Preview of currently selected image -->
+        {% if blog.featured_image %}
+        <div class="blog-image mt-2">
+            <img src="{{ blog.featured_image.file.url }}" alt="{{ blog.featured_image.alt_text }}"
+                class="img-fluid rounded">
         </div>
+        {% endif %}
 
-        <div class="mb-3">
-            {{ form.meta_keywords.label_tag }}<br>
-            {{ form.meta_keywords }}
-            <small class="text-muted">
-                <span id="keywords-left">250</span> characters left
-            </small>
-        </div>
+        <!-- Hidden input to store selected image id -->
+        <input type="hidden" name="featured_image" id="featuredImageInput"
+        {% if blog.featured_image %}
+            value="{{ blog.featured_image.id }}"
+        {% else %}
+            value=""
+        {% endif %}
+        >
 
-        <div class="mb-3">
-            {{ form.meta_description.label_tag }}<br>
-            {{ form.meta_description }}
-            <small class="text-muted">
-                <span id="description-left">160</span> characters left
-            </small>
-        </div>
     </div>
+
+    <!-- Modal -->
+    <!-- Modal -->
+<div class="modal fade" id="cmsModal" tabindex="-1" aria-labelledby="cmsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Select Image from CMS</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="cmsModalBody">
+        <!-- CMS images will load here -->
+      </div>
+    </div>
+  </div>
 </div>
 
 
-        <div>
+
+    {{ form.active.label_tag }}
+    {{ form.active }}<br><br>
+
+    <input type="hidden" name="metadata_opened" id="metadata_opened" value="0">
+
+    <input type="hidden" name="metadata_opened" id="metadata_opened" value="0">
+
+    <button class="btn btn-secondary mb-3 d-flex justify-content-between align-items-center" type="button"
+        data-bs-toggle="collapse" data-bs-target="#metadata-section" aria-expanded="false">
+        Metadata
+        <i class="bi bi-chevron-down ms-2"></i>
+    </button>
+
+    <div class="collapse" id="metadata-section">
+        <div class="card card-body">
+            <div class="mb-3">
+                {{ form.meta_title.label_tag }}<br>
+                {{ form.meta_title }}
+                <small class="text-muted">
+                    <span id="title-left">60</span> characters left
+                </small>
+            </div>
+
+            <div class="mb-3">
+                {{ form.meta_keywords.label_tag }}<br>
+                {{ form.meta_keywords }}
+                <small class="text-muted">
+                    <span id="keywords-left">250</span> characters left
+                </small>
+            </div>
+
+            <div class="mb-3">
+                {{ form.meta_description.label_tag }}<br>
+                {{ form.meta_description }}
+                <small class="text-muted">
+                    <span id="description-left">160</span> characters left
+                </small>
+            </div>
+        </div>
+    </div>
+
+
+    <div>
         <button type="submit" name="action" value="save" class="btn btn-success">Save</button>
         <button type="submit" name="action" value="save_more" class="btn btn-success">Save & More</button>
         <button type="submit" name="action" value="save_quit" class="btn btn-success">Save & Quit</button>
 
     </div>
-    </form>
+</form>
+<script>
+document.getElementById('selectImageBtn').addEventListener('click', function() {
+    var cmsModal = new bootstrap.Modal(document.getElementById('cmsModal'));
+    cmsModal.show();
+
+    fetch("{% url 'contentmgmt:cms_media_list' %}")
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('cmsModalBody').innerHTML = html;
+
+            // Add click handler to images
+            document.querySelectorAll('.cms-image').forEach(img => {
+                img.addEventListener('click', function() {
+                    const imageId = this.dataset.id;
+                    const imageUrl = this.dataset.url;
+
+                    document.getElementById('featuredImageInput').value = imageId;
+
+                    // Show preview
+                    let previewContainer = document.querySelector('.blog-image');
+                    if (!previewContainer) {
+                        previewContainer = document.createElement('div');
+                        previewContainer.classList.add('blog-image', 'mt-2');
+                        document.getElementById('selectImageBtn').after(previewContainer);
+                    }
+                    previewContainer.innerHTML = `<img src="${imageUrl}" class="img-fluid rounded">`;
+
+                    cmsModal.hide();
+                });
+            });
+        })
+        .catch(err => console.error("Failed to load CMS content:", err));
+});
+</script>
 
 <!-- External blog.js (optional, after DOM ready) -->
 <script src="{% static 'js/blogform.js' %}"></script>

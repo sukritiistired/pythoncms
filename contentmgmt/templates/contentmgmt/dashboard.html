@@ -106,7 +106,7 @@
                  contenteditable="true" 
                  data-id="{{ folder.id }}" 
                  data-type="folder">
-                {{ folder.name|truncatechars:18 }}
+                {{ folder.name|truncatechars:50 }}
             </div>
             <div class="actions">
                 <a class="btn btn-sm btn-outline-danger action-btn delete-item" 
@@ -142,7 +142,7 @@
                  contenteditable="true" 
                  data-id="{{ file.id }}" 
                  data-type="file">
-                {{ file.name|truncatechars:18 }}
+                {{ file.name|truncatechars:50 }}
             </div>
             <div class="actions">
                 <a href="{{ file.file.url }}" download class="btn btn-sm btn-outline-info action-btn">
@@ -510,7 +510,79 @@ $('#media-search').on('input', function() {
 });
 
 </script>
+<script>
+function loadFolder(folderId="") {
+    let url = folderId
+        ? `/blog/cms-media/${folderId}/`
+        : `/blog/cms-media/`;
 
+    fetch(url)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById("cmsModalBody").innerHTML = html;
+        });
+}
+
+// OPEN ROOT WHEN MODAL OPENS
+document.getElementById("cmsModal").addEventListener("shown.bs.modal", function () {
+    loadFolder();
+});
+
+// NAVIGATE FOLDER (delegation)
+document.addEventListener("click", function(e) {
+    if (e.target.closest(".navigate-folder")) {
+        e.preventDefault();
+        let id = e.target.closest(".navigate-folder").dataset.id;
+        loadFolder(id);
+    }
+});
+
+// SELECT IMAGE
+document.addEventListener("click", function(e) {
+    if (e.target.closest(".select-image")) {
+        let box = e.target.closest(".select-image");
+
+        document.getElementById("featuredImageInput").value = box.dataset.id;
+
+        document.getElementById("imagePreview").innerHTML =
+            `<img src="${box.dataset.url}" class="img-fluid rounded mt-2">`;
+
+        bootstrap.Modal.getInstance(document.getElementById('cmsModal')).hide();
+    }
+});
+
+// UPLOAD FILE
+document.addEventListener("click", function(e){
+    if (e.target.id === "uploadBtn") {
+        document.getElementById("fileInput").click();
+    }
+});
+
+document.addEventListener("change", function(e){
+    if (e.target.id === "fileInput") {
+        let formData = new FormData();
+        for (let file of e.target.files) {
+            formData.append("file", file);
+        }
+
+        fetch("/blog/upload-media/", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                loadFolder();  // reload current folder
+            } else {
+                alert("Upload failed");
+            }
+        });
+    }
+});
+</script>
 
 
 
