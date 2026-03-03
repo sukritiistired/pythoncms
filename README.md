@@ -99,10 +99,6 @@ python manage.py createsuperuser
 - Enter a username, email, and password when prompted.
 
 ## 7. Run the development server
-- Activate the virtual environment
-```bash
-venv\Scripts\activate
-```
 - Start the Django development server:
 ```bash
 python manage.py runserver
