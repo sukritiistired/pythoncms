@@ -4,12 +4,16 @@
 <!-- Breadcrumb -->
 <nav aria-label="breadcrumb" class="mb-2">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><span class="breadcrumb-link" data-folder-id="">Root</span></li>
+        <li class="breadcrumb-item">
+            <span class="breadcrumb-link" data-url="{% url 'contentmgmt:cms_media_list' %}">Root</span>
+        </li>
         {% for folder in folder_path %}
             {% if forloop.last %}
                 <li class="breadcrumb-item active">{{ folder.name }}</li>
             {% else %}
-                <li class="breadcrumb-item"><span class="breadcrumb-link" data-folder-id="{{ folder.id }}">{{ folder.name }}</span></li>
+                <li class="breadcrumb-item">
+                    <span class="breadcrumb-link" data-url="{% url 'contentmgmt:cms_media_list_folder' folder.id %}">{{ folder.name }}</span>
+                </li>
             {% endif %}
         {% endfor %}
     </ol>
@@ -19,9 +23,13 @@
     <!-- Folders -->
     {% for folder in folders %}
     <div class="col-3 mb-3">
-        <div class="explorer-card folder-card text-center cms-folder" data-folder-id="{{ folder.id }}" style="cursor:pointer;">
-            <i class="fas fa-folder fa-3x text-warning"></i>
-            <div>{{ folder.name|truncatechars:50 }}</div>
+        <div class="explorer-card folder-card text-center cms-folder"
+             data-url="{% url 'contentmgmt:cms_media_list_folder' folder.id %}"
+             style="cursor:pointer;">
+            <div class="icon-wrapper">
+                <i class="fas fa-folder fa-3x text-warning"></i>
+            </div>
+            <div class="name mt-2">{{ folder.name|truncatechars:50 }}</div>
         </div>
     </div>
     {% endfor %}

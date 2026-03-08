@@ -53,7 +53,7 @@
         });
     </script>
 
-    <!-- Featured Image Selection -->
+    <!-- Featured Image -->
     <div class="mb-3">
         <label>Featured Image</label>
         <button type="button" class="btn btn-outline-secondary" id="selectImageBtn">Select Image from CMS</button>
@@ -88,19 +88,19 @@
 </form>
 
 <script>
-function initCMSModalItems(){
-    // Images
+function initCMSModalItems() {
+    // Image selection
     document.querySelectorAll('.cms-image').forEach(img => {
-        img.addEventListener('click', function(){
+        img.addEventListener('click', function () {
             const imageId = this.dataset.id;
             const imageUrl = this.dataset.url;
 
             document.getElementById('id_featured_image').value = imageId;
 
             let previewContainer = document.querySelector('.blog-image');
-            if(!previewContainer){
+            if (!previewContainer) {
                 previewContainer = document.createElement('div');
-                previewContainer.classList.add('blog-image','mt-2');
+                previewContainer.classList.add('blog-image', 'mt-2');
                 document.getElementById('selectImageBtn').after(previewContainer);
             }
             previewContainer.innerHTML = `<img src="${imageUrl}" class="img-fluid rounded">`;
@@ -110,24 +110,24 @@ function initCMSModalItems(){
         });
     });
 
-    // Folders
+    // Folder navigation
     document.querySelectorAll('.cms-folder').forEach(folder => {
-        folder.addEventListener('click', function() {
-            const folderId = this.dataset.folderId;
-            fetch("{% url 'contentmgmt:cms_media_list' %}?folder_id=" + folderId)
+        folder.addEventListener('click', function () {
+            const url = this.dataset.url;
+            fetch(url)
                 .then(res => res.text())
                 .then(html => {
                     document.getElementById('cmsModalBody').innerHTML = html;
-                    initCMSModalItems(); // recursively attach events
+                    initCMSModalItems(); // Reattach handlers
                 });
         });
     });
 
-    // Breadcrumbs
+    // Breadcrumb navigation
     document.querySelectorAll('.breadcrumb-link').forEach(crumb => {
-        crumb.addEventListener('click', function(){
-            const folderId = this.dataset.folderId;
-            fetch("{% url 'contentmgmt:cms_media_list' %}?folder_id=" + folderId)
+        crumb.addEventListener('click', function () {
+            const url = this.dataset.url;
+            fetch(url)
                 .then(res => res.text())
                 .then(html => {
                     document.getElementById('cmsModalBody').innerHTML = html;
@@ -137,8 +137,8 @@ function initCMSModalItems(){
     });
 }
 
-// Open modal
-document.getElementById('selectImageBtn').addEventListener('click', function() {
+// Open CMS modal
+document.getElementById('selectImageBtn').addEventListener('click', function () {
     var cmsModal = new bootstrap.Modal(document.getElementById('cmsModal'));
     cmsModal.show();
 

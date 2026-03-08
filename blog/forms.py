@@ -6,7 +6,7 @@ class BlogForm(forms.ModelForm):
     featured_image = forms.ModelChoiceField(
         queryset=MediaFile.objects.all(),
         required=False,
-        widget=forms.HiddenInput()  # CMS modal will populate this
+        widget=forms.HiddenInput()
     )
 
     class Meta:
