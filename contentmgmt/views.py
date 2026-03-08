@@ -138,8 +138,42 @@ def rename_item(request):
         return JsonResponse({'success': False})
 
     return JsonResponse({'success': True})
-
 def cms_media_list(request, folder_id=None):
+    if folder_id:
+        folder = get_object_or_404(Folder, id=folder_id, is_active=True)
+        folders = Folder.objects.filter(parent=folder, is_active=True)
+        files = MediaFile.objects.filter(folder=folder, is_active=True)
+        folder_path = get_folder_path(folder)  # ✅ add breadcrumb path
+    else:
+        folder = None
+        folders = Folder.objects.filter(parent=None, is_active=True)
+        files = MediaFile.objects.filter(folder=None, is_active=True)
+        folder_path = []
+
+    return render(request, 'contentmgmt/cms_media_list.html', {
+        'folders': folders,
+        'files': files,
+        'current_folder': folder,
+        'folder_path': folder_path,  # ✅ send to template
+    })
+    # Determine current folder
+    if folder_id:
+        folder = get_object_or_404(Folder, id=folder_id, is_active=True)
+        folders = Folder.objects.filter(parent=folder, is_active=True)
+        files = MediaFile.objects.filter(folder=folder, is_active=True)
+        folder_path = get_folder_path(folder)  # ✅ add breadcrumb path
+    else:
+        folder = None
+        folders = Folder.objects.filter(parent=None, is_active=True)
+        files = MediaFile.objects.filter(folder=None, is_active=True)
+        folder_path = []
+
+    return render(request, 'contentmgmt/cms_media_list.html', {
+        'folders': folders,
+        'files': files,
+        'current_folder': folder,
+        'folder_path': folder_path,  # ✅ send to template
+    })
     # Determine current folder
     if folder_id:
         folder = get_object_or_404(Folder, id=folder_id, is_active=True)

@@ -88,68 +88,94 @@
 </form>
 
 <script>
-function initCMSModalItems() {
-    // Image selection
-    document.querySelectorAll('.cms-image').forEach(img => {
-        img.addEventListener('click', function () {
-            const imageId = this.dataset.id;
-            const imageUrl = this.dataset.url;
+document.addEventListener('DOMContentLoaded', function() {
 
-            document.getElementById('id_featured_image').value = imageId;
+    // Initialize click handlers inside the CMS modal
+    function initCMSModalItems() {
 
-            let previewContainer = document.querySelector('.blog-image');
-            if (!previewContainer) {
-                previewContainer = document.createElement('div');
-                previewContainer.classList.add('blog-image', 'mt-2');
-                document.getElementById('selectImageBtn').after(previewContainer);
-            }
-            previewContainer.innerHTML = `<img src="${imageUrl}" class="img-fluid rounded">`;
+        // Image selection
+        document.querySelectorAll('.cms-image').forEach(img => {
+            img.addEventListener('click', function () {
+                const imageId = this.dataset.id;
+                const imageUrl = this.dataset.url;
 
-            var cmsModal = bootstrap.Modal.getInstance(document.getElementById('cmsModal'));
-            cmsModal.hide();
+                // Update hidden input
+                document.getElementById('id_featured_image').value = imageId;
+
+                // Show preview
+                let previewContainer = document.querySelector('.blog-image');
+                if (!previewContainer) {
+                    previewContainer = document.createElement('div');
+                    previewContainer.classList.add('blog-image', 'mt-2');
+                    document.getElementById('selectImageBtn').after(previewContainer);
+                }
+                previewContainer.innerHTML = `<img src="${imageUrl}" class="img-fluid rounded">`;
+
+                // Close modal
+                bootstrap.Modal.getInstance(document.getElementById('cmsModal')).hide();
+            });
         });
+
+        // Folder click navigation
+        document.querySelectorAll('.cms-folder').forEach(folder => {
+            folder.addEventListener('click', function () {
+                const url = this.dataset.url;
+                fetchFolder(url);
+            });
+        });
+
+        // Breadcrumb click navigation
+        document.querySelectorAll('.breadcrumb-link').forEach(crumb => {
+            crumb.addEventListener('click', function (event) {
+                event.preventDefault(); // prevent full page reload
+                const url = this.dataset.url;
+                fetchFolder(url);
+            });
+        });
+    }
+
+    // Fetch folder content and update modal & breadcrumb
+    function fetchFolder(url) {
+        fetch(url)
+            .then(res => res.text())
+            .then(html => {
+                // Insert new folder/file content
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+
+                const folderRow = doc.querySelector('.row');
+                if(folderRow){
+                    document.querySelector('#cmsModalBody .row').innerHTML = folderRow.innerHTML;
+                }
+
+                // Update breadcrumb
+                const newBreadcrumb = doc.querySelector('#cms-breadcrumb');
+                if(newBreadcrumb){
+                    document.getElementById('cms-breadcrumb').innerHTML = newBreadcrumb.innerHTML;
+                }
+
+                // Reattach all click handlers for new content
+                initCMSModalItems();
+            })
+            .catch(err => console.error("Failed to fetch folder:", err));
+    }
+
+    // Open CMS modal
+    document.getElementById('selectImageBtn').addEventListener('click', function () {
+        const cmsModal = new bootstrap.Modal(document.getElementById('cmsModal'));
+        cmsModal.show();
+
+        fetch("{% url 'contentmgmt:cms_media_list' %}")
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('cmsModalBody').innerHTML = html;
+                initCMSModalItems();
+            })
+            .catch(err => console.error("Failed to load CMS content:", err));
     });
 
-    // Folder navigation
-    document.querySelectorAll('.cms-folder').forEach(folder => {
-        folder.addEventListener('click', function () {
-            const url = this.dataset.url;
-            fetch(url)
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById('cmsModalBody').innerHTML = html;
-                    initCMSModalItems(); // Reattach handlers
-                });
-        });
-    });
-
-    // Breadcrumb navigation
-    document.querySelectorAll('.breadcrumb-link').forEach(crumb => {
-        crumb.addEventListener('click', function () {
-            const url = this.dataset.url;
-            fetch(url)
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById('cmsModalBody').innerHTML = html;
-                    initCMSModalItems();
-                });
-        });
-    });
-}
-
-// Open CMS modal
-document.getElementById('selectImageBtn').addEventListener('click', function () {
-    var cmsModal = new bootstrap.Modal(document.getElementById('cmsModal'));
-    cmsModal.show();
-
-    fetch("{% url 'contentmgmt:cms_media_list' %}")
-        .then(res => res.text())
-        .then(html => {
-            document.getElementById('cmsModalBody').innerHTML = html;
-            initCMSModalItems();
-        })
-        .catch(err => console.error("Failed to load CMS content:", err));
 });
 </script>
+
 
 {% endblock %}

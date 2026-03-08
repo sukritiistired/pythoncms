@@ -1,6 +1,21 @@
 {% load contentmgmt_extras %}
 <div id="media-explorer" class="row">
-
+<nav aria-label="breadcrumb" class="mb-2">
+    <ol class="breadcrumb" id="cms-breadcrumb">
+        <li class="breadcrumb-item">
+            <span class="breadcrumb-link" data-url="{% url 'contentmgmt:cms_media_list' %}">Root</span>
+        </li>
+        {% for folder in folder_path %}
+            {% if forloop.last %}
+                <li class="breadcrumb-item active">{{ folder.name }}</li>
+            {% else %}
+                <li class="breadcrumb-item">
+                    <span class="breadcrumb-link" data-url="{% url 'contentmgmt:cms_media_list_folder' folder.id %}">{{ folder.name }}</span>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</nav>
     <!-- FOLDERS -->
     {% for folder in folders %}
     <div class="col-3 mb-3">

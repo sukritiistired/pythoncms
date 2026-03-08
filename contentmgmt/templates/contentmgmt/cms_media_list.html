@@ -2,23 +2,26 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <!-- Breadcrumb -->
-<nav aria-label="breadcrumb" class="mb-2">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-            <span class="breadcrumb-link" data-url="{% url 'contentmgmt:cms_media_list' %}">Root</span>
-        </li>
-        {% for folder in folder_path %}
-            {% if forloop.last %}
-                <li class="breadcrumb-item active">{{ folder.name }}</li>
-            {% else %}
-                <li class="breadcrumb-item">
-                    <span class="breadcrumb-link" data-url="{% url 'contentmgmt:cms_media_list_folder' folder.id %}">{{ folder.name }}</span>
-                </li>
+<div id="cms-breadcrumb-container">
+    <nav aria-label="breadcrumb" class="mb-2">
+        <ol class="breadcrumb" id="cms-breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="#" class="breadcrumb-link" data-url="{% url 'contentmgmt:cms_media_list' %}">Root</a>
+            </li>
+            {% if folder_path %}
+                {% for folder in folder_path %}
+                    {% if forloop.last %}
+                        <li class="breadcrumb-item active">{{ folder.name }}</li>
+                    {% else %}
+                        <li class="breadcrumb-item">
+                            <a href="#" class="breadcrumb-link" data-url="{% url 'contentmgmt:cms_media_list_folder' folder.id %}">{{ folder.name }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
-        {% endfor %}
-    </ol>
-</nav>
-
+        </ol>
+    </nav>
+</div>
 <div class="row">
     <!-- Folders -->
     {% for folder in folders %}
