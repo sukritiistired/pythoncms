@@ -1,21 +1,39 @@
 {% load contentmgmt_extras %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-2">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><span class="breadcrumb-link" data-folder-id="">Root</span></li>
+        {% for folder in folder_path %}
+            {% if forloop.last %}
+                <li class="breadcrumb-item active">{{ folder.name }}</li>
+            {% else %}
+                <li class="breadcrumb-item"><span class="breadcrumb-link" data-folder-id="{{ folder.id }}">{{ folder.name }}</span></li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</nav>
+
 <div class="row">
-
- {% for folder in folders %}
-<div class="col-3 mb-3">
-    <a href="{% url 'contentmgmt:cms_media_list_folder' folder_id=folder.id %}" class="explorer-card folder-card">
-        <div class="icon-wrapper text-center">
+    <!-- Folders -->
+    {% for folder in folders %}
+    <div class="col-3 mb-3">
+        <div class="explorer-card folder-card text-center cms-folder" data-folder-id="{{ folder.id }}" style="cursor:pointer;">
             <i class="fas fa-folder fa-3x text-warning"></i>
+            <div>{{ folder.name|truncatechars:50 }}</div>
         </div>
-        <div class="name text-center mt-2">{{ folder.name|truncatechars:50 }}</div>
-    </a>
-</div>
-{% endfor %}
+    </div>
+    {% endfor %}
 
-    <!-- FILES -->
+    <!-- Files -->
     {% for file in files %}
     <div class="col-3 mb-3">
-        <div class="explorer-card file-item" data-url="{{ file.file.url }}" data-name="{{ file.name }}" style="cursor:pointer;">
+        <div class="explorer-card file-item cms-image"
+             data-id="{{ file.id }}"
+             data-url="{{ file.file.url }}"
+             data-name="{{ file.name }}"
+             style="cursor:pointer;">
             <div class="icon-wrapper text-center">
                 {% if file.file.url|is_image %}
                     <img src="{{ file.file.url }}" class="img-thumbnail" style="height:80px; width:auto;">
@@ -31,92 +49,22 @@
         </div>
     </div>
     {% endfor %}
-
 </div>
-
-<!-- UPLOAD FILE MODAL -->
-<div class="modal fade" id="uploadFileModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Upload Files</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="upload-form" enctype="multipart/form-data">
-                    <input type="file" name="file" multiple>
-                    <input type="hidden" name="folder" value="{{ current_folder.id|default:'' }}">
-                    <button type="submit" class="btn btn-primary mt-2">Upload</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // File selection for modals
-    document.querySelectorAll('.file-item').forEach(function(el){
-        el.addEventListener('click', function(){
-            const fileUrl = this.dataset.url;
-            const fileName = this.dataset.name;
-            const input = document.querySelector('#selected-file-input');
-            if(input) input.value = fileUrl;
-            const preview = document.querySelector('#selected-file-preview');
-            if(preview) preview.innerHTML = `<strong>${fileName}</strong><br><img src="${fileUrl}" style="max-height:100px;">`;
-            $('#fileSelectorModal').modal('hide');
-        });
-    });
-
-    // Upload via AJAX
-    const uploadForm = document.getElementById('upload-form');
-    if(uploadForm){
-        uploadForm.addEventListener('submit', function(e){
-            e.preventDefault();
-            const formData = new FormData(this);
-            fetch("{% url 'contentmgmt:upload_file' %}", {
-                method: 'POST',
-                headers: {'X-CSRFToken': '{{ csrf_token }}'},
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success){
-                    $('#uploadFileModal').modal('hide');
-                    location.reload();
-                } else {
-                    alert('Upload failed: ' + (data.errors || 'Unknown error'));
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Upload failed: unknown error');
-            });
-        });
-    }
-});
-</script>
 
 <style>
-/* Make <a> behave like a block card */
 .explorer-card {
-    display: block;          /* important so inner divs fill the card */
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    text-decoration: none;   /* remove underline */
-    color: inherit;          /* inherit text color */
-    transition: 0.2s all;
+    display:block;
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:15px;
+    text-decoration:none;
+    color:inherit;
+    transition:0.2s all;
 }
 .explorer-card:hover {
-    background-color: #f8f9fa;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background-color:#f8f9fa;
+    transform:translateY(-2px);
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
 }
-
-/* Optional: make the whole card clickable without messing inner text alignment */
-.folder-card .icon-wrapper,
-.folder-card .name {
-    pointer-events: none;    /* so clicks on children still activate <a> */
-}
+.folder-card .icon-wrapper, .folder-card .name { pointer-events:none; }
 </style>
