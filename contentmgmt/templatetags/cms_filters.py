@@ -7,3 +7,9 @@ def is_image(file_url):
     if not file_url:
         return False
     return file_url.lower().endswith((".jpg", ".jpeg", ".png", ".gif"))
+
+@register.filter
+def is_video(file_url):
+    if not file_url:
+        return False
+    return file_url.lower().endswith((".mp4", ".webm", ".mov", ".avi"))

@@ -25,11 +25,11 @@
         border-radius: 4px; z-index: 9999; font-weight: bold;
     }
 
-/* Sidebar container */
-.sidebar {
-    background: #e7e7e7!important;  /* deep dark navy */
-    color: #f8fafc;       /* soft white */
-    padding: 20px;
+.sidebar .nav-link {
+    color: var(--sidebar-text);
+}
+.sidebar .nav-link.active {
+    color: var(--sidebar-active);
 }
 
 /* Sidebar header */

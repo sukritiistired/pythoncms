@@ -45,7 +45,7 @@ def upload_file(request):
     if not request.FILES:
         return JsonResponse({'success': False, 'errors': 'No files uploaded'})
 
-    ALLOWED_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.gif', '.pdf', '.docx')
+    ALLOWED_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.gif', '.pdf', '.docx', '.mp4', '.webm', '.mov', '.avi')
     uploaded_files = []
 
     for f in request.FILES.getlist('file'):
@@ -155,7 +155,7 @@ def cms_media_list(request, folder_id=None):
         'files': files,
         'current_folder': folder,
         'folder_path': folder_path,  # ✅ send to template
-    })
+    })              
     # Determine current folder
     if folder_id:
         folder = get_object_or_404(Folder, id=folder_id, is_active=True)

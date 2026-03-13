@@ -18,8 +18,8 @@
                 <tr>
                     <th><input type="checkbox" id="select-all"></th>
                     <th>Username</th>
+                    <th>Role</th>
                     <th>Email</th>
-                    <th>Staff</th>
                     <th>Active</th>
                     <th>Actions</th>
                 </tr>
@@ -29,17 +29,34 @@
                 <tr>
                     <td><input type="checkbox" name="selected_user" value="{{ user.id }}"></td>
                     <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.is_staff }}</td>
-                    <td>{{ user.is_active }}</td>
                     <td>
-                        <a href="{% url 'core:edit_user' user.id %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
-                        {% if user.is_active %}
-                            <a href="{% url 'core:user_toggle_status' user.id %}" class="btn btn-sm btn-secondary"><i class="bi bi-upload"></i></a>
-                        {% else %}
-                            <a href="{% url 'core:user_toggle_status' user.id %}" class="btn btn-sm btn-success"><i class="bi bi-upload"></i></a>
+                        {% for group in user.groups.all %}
+                            {{ group.name }}
+                        {% empty %}
+                            No Role
+                        {% endfor %}
+                    </td>
+                    <td>{{ user.email }}</td>
+
+                    <td>{% if user.id != request.user.id %}
+                            {% if user.is_active %}
+                                <a href="{% url 'core:user_toggle_status' user.id %}" class="btn btn-sm btn-success">
+                                    Published
+                                </a>
+                            {% else %}
+                                <a href="{% url 'core:user_toggle_status' user.id %}" class="btn btn-sm btn-secondary">
+                                    Unpublished
+                                </a>
+                            {% endif %}
                         {% endif %}
-                        <a href="{% url 'core:delete_user' user.id %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
+                    </td>
+                    <td>
+                        <a href="{% url 'core:edit_user' user.id %}" class="btn btn-sm btn-primary"><i class="bi bi-pencil-square"></i></a>
+                       {% if user.id != request.user.id %}
+                            <a href="{% url 'core:delete_user' user.id %}" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

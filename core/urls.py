@@ -7,7 +7,10 @@ from django.contrib.auth.views import LoginView, LogoutView
 app_name = "core"
 
 urlpatterns = [
-
+    path("roles/", views.role_list, name="role_list"),
+    path("roles/add/", views.add_role, name="add_role"),
+    path("roles/edit/<int:pk>/", views.edit_role, name="edit_role"),
+    path("roles/delete/<int:pk>/", views.delete_role, name="delete_role"),
     path("", RedirectView.as_view(url="users/", permanent=False)),
     path("login/", LoginView.as_view(template_name="core/login.html"), name="login"),
     path("logout/", LogoutView.as_view(next_page="core:login"), name="logout"),

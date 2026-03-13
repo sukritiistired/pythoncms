@@ -1,9 +1,67 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-<h2>{% if user %}Edit{% else %}Add{% endif %} User</h2>
+
+<!-- Sticky Back Button -->
+<div class="d-flex justify-content-end position-sticky mt-2" style="top:50px; z-index:1020;">
+    <a href="{% url 'core:user_list' %}" class="btn btn-primary">Back</a>
+</div>
+
+<!-- Page Title -->
+<h3>
+    {% if form.instance.pk %}
+        Edit {{ form.instance.username }}
+        <small style="font-size:0.5em; color:gray; margin-left:5px;">
+            Update user details
+        </small>
+    {% else %}
+        Add New User
+        <small style="font-size:0.5em; color:gray; margin-left:5px;">
+            Create a new system user
+        </small>
+    {% endif %}
+</h3>
+
+<!-- User Form -->
 <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">{% if user %}Update{% else %}Add{% endif %}</button>
+{% csrf_token %}
+
+<div class="mb-3">
+<label>Username</label>
+{{ form.username }}
+</div>
+
+<div class="mb-3">
+<label>Email</label>
+{{ form.email }}
+</div>
+
+<div class="mb-3">
+<label>Password</label>
+{{ form.password }}
+</div>
+
+<div class="mb-3">
+<label>Role</label>
+<select name="role" class="form-control">
+    <option value="">Select Role</option>
+    {% for group in groups %}
+        <option value="{{ group.id }}">
+            {{ group.name }}
+        </option>
+    {% endfor %}
+</select>
+</div>
+
+<div class="mb-3">
+<label>Active</label>
+{{ form.is_active }}
+</div>
+
+<button type="submit" class="btn btn-primary">
+Save
+</button>
+
 </form>
+
 {% endblock %}

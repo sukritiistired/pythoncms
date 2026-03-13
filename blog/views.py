@@ -63,7 +63,6 @@ def create_blog(request):
         'form': form,
         'homepage': homepage,
     })
-
 def edit_blog(request, id):
     blog = get_object_or_404(Blog, id=id)
     session_filter = request.session.get('homepage_filter', '0')

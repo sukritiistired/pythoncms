@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between mb-3">
+    <h3>Roles</h3>
+    <a href="{% url 'core:add_role' %}" class="btn btn-primary">
+        Add Role
+    </a>
+</div>
+
+<table class="table table-bordered">
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Role Name</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for role in roles %}
+
+<tr>
+<td>{{ role.id }}</td>
+<td>{{ role.name }}</td>
+
+<td>
+
+<a href="{% url 'core:edit_role' role.id %}" class="btn btn-sm btn-warning">
+Edit
+</a>
+
+<a href="{% url 'core:delete_role' role.id %}" class="btn btn-sm btn-danger">
+Delete
+</a>
+
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% endblock %}
